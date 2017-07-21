@@ -90,7 +90,7 @@ Export auth and socialaccount (from django-allauth):
 
 Results in a Grafana dashboard:
 
-![Dex auth dashboard screenshot](https://raw.github.com/synw/django-dex/master/docs/img/screenshot.png)
+![Dex auth dashboard screenshot](https://github.com/synw/django-dex/raw/master/doc/img/screenshot.png)
 
 ## Todo
 
