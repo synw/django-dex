@@ -55,7 +55,7 @@ Example: export from auth:
 
 Set different time fields for models:
 
-   ```
+   ```python
    DEX_TIME_FIELDS = {
     "User": "date_joined",
     "SocialAccount": "date_joined"
@@ -64,7 +64,7 @@ Set different time fields for models:
  
  Set different serializers for models:
  
-   ```
+   ```python
    DEX_SERIALIZERS = {
     "MyModel": ("myapp.serializer", ["field1", "field2"]),
    }
@@ -72,6 +72,25 @@ Set different time fields for models:
    
 The key is the model name, first parameter in tuple is the serializer path and the second is the fields to be prefectched when
 querying for model instances.
+
+## Example
+
+Export auth and socialaccount (from django-allauth):
+
+   ```bash
+   # auth account creation
+   python3 manage.py dexport timeseries -a auth -m  user_join -t date_joined
+   # auth last logins
+   python3 manage.py dexport timeseries -a auth -m user_login -t last_login
+   # allauth accounts creation
+   python3 manage.py dexport timeseries -a socialaccount -m social_join -t date_joined
+   # allauth last logins
+   python3 manage.py dexport timeseries -a socialaccount -m social_login -t last_login
+   ```
+
+Results in a Grafana dashboard:
+
+![Dex auth dashboard screenshot](https://raw.github.com/synw/django-dex/master/docs/img/screenshot.png)
 
 ## Todo
 
