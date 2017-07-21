@@ -75,7 +75,7 @@ querying for model instances.
 
 ## Example
 
-Export auth and socialaccount (from django-allauth):
+Export auth and socialaccount (from django-allauth) using an Influxdb database:
 
    ```bash
    # auth account creation
