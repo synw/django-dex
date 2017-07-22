@@ -47,6 +47,8 @@ Options:
 
 `-s 1`: returns json stats about exports
 
+`-txt 0`: disable text fields in serialization: usefull for timeseries where it is not needed
+
 Example: export from auth:
 
 `python3 manage.py dexport timeseries -a auth -m mysite_auth -t date_joined`
@@ -79,13 +81,13 @@ Export auth and socialaccount (from django-allauth) using an Influxdb database:
 
    ```bash
    # auth account creation
-   python3 manage.py dexport timeseries -a auth -m  user_join -t date_joined
+   python3 manage.py dexport timeseries -a auth -m  user_join -t date_joined -txt 0
    # auth last logins
-   python3 manage.py dexport timeseries -a auth -m user_login -t last_login
+   python3 manage.py dexport timeseries -a auth -m user_login -t last_login -txt 0
    # allauth accounts creation
-   python3 manage.py dexport timeseries -a socialaccount -m social_join -t date_joined
+   python3 manage.py dexport timeseries -a socialaccount -m social_join -t date_joined -txt 0
    # allauth last logins
-   python3 manage.py dexport timeseries -a socialaccount -m social_login -t last_login
+   python3 manage.py dexport timeseries -a socialaccount -m social_login -t last_login -txt 0
    ```
 
 Results in a Grafana dashboard:
