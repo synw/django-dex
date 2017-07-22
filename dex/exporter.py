@@ -19,10 +19,11 @@ class Exporter:
             err = "Dex exporter initialization error:\n" + self.db.err
             self.err = err
 
-    def run(self, measurement, time_field, appname, report):
+    def run(self, measurement, time_field, appname, report, enable_text_field):
         t = time.time()
-        if report == 0:
+        if report is False:
             print("Start exporting data to measurement", measurement)
+
         apps_list = settings.INSTALLED_APPS
         if appname is not None:
             apps_list = [appname]
@@ -36,7 +37,7 @@ class Exporter:
         for appstr in allmodels:
             if len(allmodels) == num_apps + 1:
                 last_app = True
-            if report == 0:
+            if report is False:
                 print("*********************************** Processing", appstr)
 
             appmodels = allmodels[appstr]
@@ -52,16 +53,15 @@ class Exporter:
                 if num_models == len(appmodels) + 1:
                     last_model = True
                 stats = self.process_model(model, appstr, measurement,
-                                           time_field, last_app, last_model, stats, report)
+                                           time_field, last_app, last_model, stats, report, enable_text_field)
             num_apps += 1
-        elapsed_time = time.time() - t
-        if report == 0:
-            print("Processed", num_models, "models from",
+        st = json.dumps(stats, indent=4)
+        if report is False:
+            elapsed_time = time.time() - t
+            self.print_stats(stats)
+            print("Processed", stats["num_models"], "models from",
                   num_apps, "applications in", str(elapsed_time) + "s")
 
-        st = json.dumps(stats, indent=4)
-        if report == 0:
-            self.print_stats(stats)
         else:
             print(st)
 
@@ -73,10 +73,10 @@ class Exporter:
                 print("|--", m, ": processed",
                       stats["apps"][appname][m], "instances")
 
-    def process_model(self, model, appstr, measurement, time_field, last_app, last_model, stats, report):
+    def process_model(self, model, appstr, measurement, time_field, last_app, last_model, stats, report, enable_text_field):
         global POINTS
         modelname = model.__name__
-        if report == 0:
+        if report is False:
             print("######### Processing model", modelname)
 
         if modelname in SERIALIZERS:
@@ -90,7 +90,7 @@ class Exporter:
         ni = 0
         for instance in qs:
             stats["num_instances"] += 1
-            if report == 0:
+            if report is False:
                 print(stats["num_instances"], appstr, ":", modelname)
 
             stats["apps"][appstr][modelname] += 1
@@ -98,7 +98,7 @@ class Exporter:
             if ti == ni:
                 last_instance = True
             data = self.db.serialize(
-                instance, model, SERIALIZERS, measurement, time_field)
+                instance, model, SERIALIZERS, measurement, time_field, enable_text_field)
             force_save = False
             if last_app is True and last_model is True and last_instance is True:
                 force_save = True
@@ -127,7 +127,7 @@ class Exporter:
     def serialize(self, instance, modelname, serializers):
         if modelname in serializers:
             serializer = self._get_serializer(serializers[modelname][0])
-            data = serializer(instance)
+            data = serializer(instance, self.enable_text_field)
             return data
         else:
             data = json.loads(SRZ.serialize("json", [instance])[1:-1])

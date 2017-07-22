@@ -20,7 +20,7 @@ class DexDb():
         init_func = self._importfunc(fstr)
         init_func(self)
 
-    def serialize(self, instance, model, serializers, measurement, time_field):
+    def serialize(self, instance, model, serializers, measurement, time_field, enable_text_field):
         modelname = model.__name__
         if modelname in serializers:
             serializer = self._get_model_serializer(serializers, modelname)
@@ -29,11 +29,11 @@ class DexDb():
         if serializer is None:
             data = self._serialize_json(instance)
         else:
-            data = serializer(instance)
+            data = serializer(instance, enable_text_field)
         protocol_serializer = self._get_protocol_serializer()
         if protocol_serializer is not None:
             data = protocol_serializer(
-                model, instance, data, measurement, time_field)
+                model, instance, data, measurement, time_field, enable_text_field)
         return data
 
     def write(self, data, force_save=False):

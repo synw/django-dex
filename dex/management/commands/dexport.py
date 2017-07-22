@@ -33,6 +33,12 @@ class Command(BaseCommand):
             dest='stats',
             help='Return json stats',
         )
+        parser.add_argument(
+            '-txt',
+            default=1,
+            dest='text_field',
+            help='Enable text fields to be serialized',
+        )
 
     def handle(self, *args, **options):
         global MEASUREMENT
@@ -41,9 +47,16 @@ class Command(BaseCommand):
             MEASUREMENT = options["measurement"]
         if options["time_field"] is not "date":
             TIME_FIELD = options["time_field"]
+        stats = options["stats"]
+        isstats = True
+        if stats == 0:
+            isstats = False
+        istext = True
+        if istext == 0:
+            istext = False
         db = options["db"]
         ex = Exporter(db)
         if ex.err != None:
             print("ERROR", ex.err)
             return
-        ex.run(MEASUREMENT, TIME_FIELD, options["appname"], options["stats"])
+        ex.run(MEASUREMENT, TIME_FIELD, options["appname"], isstats, istext)
