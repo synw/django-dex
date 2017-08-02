@@ -1,5 +1,6 @@
 import importlib
 import json
+from django.conf import settings
 from django.core import serializers as SRZ
 from dex.conf import DBS
 
@@ -9,7 +10,7 @@ class DexDb():
     def __init__(self, dbname):
         self.name = dbname
         self.err = None
-        conf = self._get_conf(dbname)
+        conf = self._get_db(dbname)
         if conf is None:
             err = "Database " + dbname + " not found in settings"
             self.err = err
@@ -69,7 +70,7 @@ class DexDb():
         f = self._importfunc(fstr)
         return f
 
-    def _get_conf(self, dbname):
+    def _get_db(self, dbname):
         for name in DBS:
             db = DBS[name]
             if name == dbname:
