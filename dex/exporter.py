@@ -9,6 +9,23 @@ from django.conf import settings
 from dex.db import DexDb
 from dex.utils import Colors
 from dex.conf import EXCLUDE, SERIALIZERS
+TERM = "terminal" in settings.INSTALLED_APPS
+if TERM is True:
+    from terminal.commands import rprint
+
+VERB = 1
+
+
+def printM(*args):
+    global TERM
+    print("ARGS", args)
+    msg = ""
+    for arg in args:
+        msg = msg + " " + str(arg)
+    if TERM is True:
+        rprint(msg)
+    else:
+        print(msg)
 
 
 class Exporter:
@@ -23,16 +40,18 @@ class Exporter:
             err = "Dex exporter initialization error:\n" + self.db.err
             self.err = err
 
-    def clone(self, dbsource, dbdest, apps_list=None):
+    def clone(self, dbsource, dbdest, apps_list=None, verbosity=1):
+        global VERB
+        VERB = verbosity
         if apps_list is None:
             apps_list = settings.INSTALLED_APPS
         st = time.time()
         source = self._get_django_db(dbsource)
         if source is None:
-            print("Database", dbsource, "not found")
+            printM("Database", dbsource, "not found")
         dest = self._get_django_db(dbdest)
         if dest is None:
-            print("Database", dbdest, "not found")
+            printM("Database", dbdest, "not found")
         models = self.models(apps_list)
         models["contenttypes"]
         num_models = 0
@@ -49,7 +68,7 @@ class Exporter:
             if appname == "contenttypes" or appname == "sessions":
                 continue
             if len(models[appname]) > 0:
-                print("# Processing app", appname)
+                printM("# Processing app", appname)
 
             stats[appname] = {}
             stats[appname]["num_models"] = 0
@@ -64,33 +83,35 @@ class Exporter:
             stats = self.clone_model(model, dbsource, dbdest,
                                      stats["num_instances"], appname, models, num_models, stats)
         """
+        """
         num_apps = len(models)
         elapsed_time = time.time() - st
         for appname in stats:
             if len(appname) > 1:
-                print("###", appname, ":",
-                      stats[appname]["num_models"], "models")
+                printM("###", appname, ":",
+                           stats[appname]["num_models"], "models")
 
             for m in stats[appname]:
                 ni = stats[appname][m]
                 if ni > 0 and m != "num_models":
-                    print("|--", m, ":", ni, "instances")
+                    printM("|--", m, ":", ni, "instances")
 
-        print("[OK] Saved", stats["num_instances"], "instances from", num_models,
-              "models from", num_apps, "apps in", elapsed_time, "s")
+        printM("[OK] Saved", stats["num_instances"], "instances from", num_models,
+               "models from", num_apps, "apps in", elapsed_time, "s")
         if len(self.errors) > 0:
-            print("ERRORS")
+            printM("ERRORS")
             for err in self.errors:
-                print(err)
+                printM(err)
+        """
 
     def clone_model(self, model, dbsource, dbdest, num_instances, appname, models, num_models, stats):
         qs = self._queryset(model, dbsource, False)
-        print("- Model", model.__name__, ":",
-              qs.count(), "objects found")
+        printM("- Model", model.__name__, ":",
+               qs.count(), "objects found")
         num_model_instances = 0
         for instance in qs:
-            print(num_instances, appname, "-",
-                  model.__name__, num_model_instances)
+            printM(num_instances, appname, "-",
+                   model.__name__, num_model_instances)
 
             num_instances += 1
             num_model_instances += 1
@@ -104,7 +125,7 @@ class Exporter:
     def run(self, measurement, time_field, appname, report, enable_text_field):
         t = time.time()
         if report is False:
-            print("Start exporting data to measurement", measurement)
+            printM("Start exporting data to measurement", measurement)
 
         apps_list = settings.INSTALLED_APPS
         if appname is not None:
@@ -120,7 +141,7 @@ class Exporter:
             if len(allmodels) == num_apps + 1:
                 last_app = True
             if report is False:
-                print("*********************************** Processing", appstr)
+                printM("*********************************** Processing", appstr)
 
             appmodels = allmodels[appstr]
             last_model = False
@@ -140,26 +161,26 @@ class Exporter:
         st = json.dumps(stats, indent=4)
         if report is False:
             elapsed_time = time.time() - t
-            self.print_stats(stats)
-            print("Processed", stats["num_models"], "models from",
-                  num_apps, "applications in", str(elapsed_time) + "s")
+            self.pprintMstats(stats)
+            printM("Processed", stats["num_models"], "models from",
+                   num_apps, "applications in", str(elapsed_time) + "s")
 
         else:
-            print(st)
+            printM(st)
 
     def print_stats(self, stats):
         for appname in stats["apps"]:
-            print("# App", Colors.BOLD + appname + Colors.ENDC, ": processed", len(
+            printM("# App", Colors.BOLD + appname + Colors.ENDC, ": processed", len(
                 stats["apps"][appname]), "models")
             for m in stats["apps"][appname]:
-                print("|--", m, ": processed",
-                      stats["apps"][appname][m], "instances")
+                printM("|--", m, ": processed",
+                       stats["apps"][appname][m], "instances")
 
     def process_model(self, model, appstr, measurement, time_field, last_app, last_model, stats, report, enable_text_field):
         global POINTS
         modelname = model.__name__
         if report is False:
-            print("######### Processing model", modelname)
+            printM("######### Processing model", modelname)
 
         if modelname in SERIALIZERS:
             qs = model.objects.all().prefetch_related(
@@ -173,7 +194,7 @@ class Exporter:
         for instance in qs:
             stats["num_instances"] += 1
             if report is False:
-                print(stats["num_instances"], appstr, ":", modelname)
+                printM(stats["num_instances"], appstr, ":", modelname)
 
             stats["apps"][appstr][modelname] += 1
             ni += 1
@@ -227,7 +248,7 @@ class Exporter:
         mod_name, func_name = function_string.rsplit('.', 1)
         mod = importlib.import_module(mod_name)
         serz = getattr(mod, func_name)
-        #print(serz, type(serz))
+        #printM(serz, type(serz))
         return serz
 
     def _get_django_db(self, dbname):
@@ -253,12 +274,13 @@ class Exporter:
             fields = self._get_fields(model, instance)
             model.objects.using(dbdest).get_or_create(fields)
         except Exception as e:
-            print("ERROR", e)
+            printM("ERROR", e)
         """
         try:
             instance.save(using=dbdest, force_insert=True)
         except IntegrityError as e:
             err = "ERROR inserting", instance, "- ", model.__name__
             self.errors.append(err)
-            print(err, e)
+            if VERB > 1:
+                printM(err, e)
         return

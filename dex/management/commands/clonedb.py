@@ -20,6 +20,11 @@ class Command(BaseCommand):
                             default=False,
                             help='Migrate the destination database',
                             )
+        parser.add_argument('-v',
+                            dest='verbosity',
+                            default=1,
+                            help='Set verbosity',
+                            )
 
     def handle(self, *args, **options):
         ex = Exporter()
@@ -30,4 +35,4 @@ class Command(BaseCommand):
             call_command("migrate", "--database=" + dest)
         if applist is not None:
             applist = str.split(options["applist"], ",")
-        ex.clone(source, dest, applist)
+        ex.clone(source, dest, applist=applist, verbosity=options["verbosity"])
