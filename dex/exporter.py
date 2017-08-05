@@ -18,7 +18,6 @@ VERB = 1
 
 def printM(*args):
     global TERM
-    print("ARGS", args)
     msg = ""
     for arg in args:
         msg = msg + " " + str(arg)
