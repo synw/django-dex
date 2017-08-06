@@ -129,7 +129,23 @@ Results in a Grafana dashboard:
 
 ## Commands for django-terminal
 
-[replicatedb](https://github.com/synw/django-terminal#commands): to replicate the 'default' database to the 'replica' database
+These are command that run into [Django Terminal](https://github.com/synw/django-terminal)
+
+[replicatedb](https://github.com/synw/django-terminal#commands): to replicate the 'default' database to the 'replica' 
+sqlite database. Settings:
+
+   ```python
+   DATABASES = {
+      'default': {
+         # ...
+       },
+       'replica': {
+          'ENGINE': 'django.db.backends.sqlite3',
+          'NAME': os.path.join(BASE_DIR, 'replica.sqlite3'),
+       }
+   }
+   
+This command is used to clone the default db into a sqlite replica and download it.
 
 ## Todo
 
