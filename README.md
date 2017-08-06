@@ -144,6 +144,7 @@ sqlite database. Settings:
           'NAME': os.path.join(BASE_DIR, 'replica.sqlite3'),
        }
    }
+   ```
    
 This command is used to clone the default db into a sqlite replica and download it.
 
