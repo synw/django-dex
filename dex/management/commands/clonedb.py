@@ -20,7 +20,7 @@ class Command(BaseCommand):
                             default=False,
                             help='Migrate the destination database',
                             )
-        parser.add_argument('-v',
+        parser.add_argument('-verb',
                             dest='verbosity',
                             default=1,
                             help='Set verbosity',

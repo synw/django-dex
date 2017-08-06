@@ -39,11 +39,11 @@ class Exporter:
             err = "Dex exporter initialization error:\n" + self.db.err
             self.err = err
 
-    def clone(self, dbsource, dbdest, apps_list=None, verbosity=1):
+    def clone(self, dbsource, dbdest, applist=None, verbosity=1):
         global VERB
         VERB = verbosity
-        if apps_list is None:
-            apps_list = settings.INSTALLED_APPS
+        if applist is None:
+            applist = settings.INSTALLED_APPS
         st = time.time()
         source = self._get_django_db(dbsource)
         if source is None:
@@ -51,7 +51,7 @@ class Exporter:
         dest = self._get_django_db(dbdest)
         if dest is None:
             printM("Database", dbdest, "not found")
-        models = self.models(apps_list)
+        models = self.models(applist)
         models["contenttypes"]
         num_models = 0
         num_instances = 0
