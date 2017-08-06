@@ -7,10 +7,23 @@ Database export tools. Features:
 
 ## Install
 
-Clone and add `"dex",` to installed apps. Install dependencies:
+Install dependencies:
 
    ```bash
-   pip install influxdb
+   pip install influxdb django-downloadview
+   ```
+   
+Clone and add to installed apps:
+
+   ```python
+   "django_downloadview",
+   "dex",
+   ``` 
+   
+Urls:
+
+   ```
+   url('^dex/', include('dex.urls')),
    ```
    
 ## Management commands
@@ -113,6 +126,10 @@ Export auth and socialaccount (from django-allauth) using an Influxdb database:
 Results in a Grafana dashboard:
 
 ![Dex auth dashboard screenshot](https://github.com/synw/django-dex/raw/master/doc/img/screenshot.png)
+
+## Commands for django-terminal
+
+[replicatedb](https://github.com/synw/django-terminal#commands): to replicate the 'default' database to the 'replica' database
 
 ## Todo
 
