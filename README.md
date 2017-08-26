@@ -10,21 +10,14 @@ Database export tools. Features:
 Install dependencies:
 
    ```bash
-   pip install influxdb django-downloadview
+   pip install influxdb
    ```
    
 Clone and add to installed apps:
 
    ```python
-   "django_downloadview",
    "dex",
    ``` 
-   
-Urls:
-
-   ```
-   url('^dex/', include('dex.urls')),
-   ```
    
 ## Management commands
    
@@ -128,6 +121,12 @@ Results in a Grafana dashboard:
 ![Dex auth dashboard screenshot](https://github.com/synw/django-dex/raw/master/doc/img/screenshot.png)
 
 ## Commands for django-terminal
+
+```bash
+   pip install influxdb django-downloadview
+   ```
+   
+Add `"django_downloadview",` to installed apps.
 
 These are command that run into [Django Terminal](https://github.com/synw/django-terminal)
 
