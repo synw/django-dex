@@ -123,7 +123,7 @@ Results in a Grafana dashboard:
 ## Commands for django-terminal
 
 ```bash
-   pip install influxdb django-downloadview
+   pip install django-downloadview
    ```
    
 Add `"django_downloadview",` to installed apps.
