@@ -17,6 +17,7 @@ class Command(BaseCommand):
                             )
         parser.add_argument('-m',
                             dest='migrate',
+                            action='store_true',
                             default=False,
                             help='Migrate the destination database',
                             )
