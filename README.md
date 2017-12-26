@@ -17,9 +17,7 @@ Add to installed apps:
    "dex",
    ``` 
    
-## Management commands
-   
-### Clone a Django database into another Django database
+## Management command
 
    ```bash
    python3 manage.py clonedb default replica
@@ -39,7 +37,24 @@ Where `default` and `replica` are registered databases in settings.DATABASES:
    }
    ```
 
-Option:
+### Commands for [django-term](https://github.com/synw/django-term)
+
+```bash
+   pip install django-downloadview
+   ```
+   
+Add `"django_downloadview",` to installed apps.
+
+Add `url('^dex/', include('dex.urls')),` to urls.
+
+These are command that run into [Django Terminal](https://github.com/synw/django-terminal)
+
+[replicatedb](https://github.com/synw/django-terminal#commands): to replicate 
+the `default` database to the `replica` sqlite database.
+   
+This command is used to clone the default db into a sqlite replica and download it.
+
+Options:
 
 `-apps`: apps to export:
 
@@ -54,24 +69,6 @@ Option:
    ```
    python3 manage.py clonedb default replica -verb 0
    ```
-
-
-### Commands for [django-term](https://github.com/synw/django-term)
-
-```bash
-   pip install django-downloadview
-   ```
-   
-Add `"django_downloadview",` to installed apps.
-
-Add `url('^dex/', include('dex.urls')),` to urls.
-
-These are command that run into [Django Terminal](https://github.com/synw/django-terminal)
-
-[replicatedb](https://github.com/synw/django-terminal#commands): to replicate 
-the 'default' database to the 'replica' sqlite database.
-   
-This command is used to clone the default db into a sqlite replica and download it.
 
 ## Todo
 
