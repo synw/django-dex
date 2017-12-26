@@ -1,28 +1,23 @@
 from __future__ import print_function
 import time
+import os
+import errno
+import shutil
 from goerr import err
+from django.utils._os import safe_join
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.sites.models import Site
 from introspection.inspector import inspect
-#from ..db import DexDb
 from ..db.django import DjangoDb
 from ..conf import EXCLUDE
+TERM = "term" in settings.INSTALLED_APPS
+if TERM is True:
+    from term.commands import rprint
+    print = rprint
 
 
 class Exporter(DjangoDb):
-
-    def __init__(self, dbname=None):
-        self.errors = []
-        if dbname is None:
-            return
-        self.err = None
-        """
-        self.db = DexDb(dbname)
-        if self.db.err is not None:
-            err = "Dex exporter initialization error:\n" + self.db.err
-            self.err = err
-        """
 
     def clone(self, dbsource, dbdest, applist=None, verbosity=1):
         global EXCLUDE
@@ -68,7 +63,6 @@ class Exporter(DjangoDb):
                     print("# Processing app", appname)
                     stats[appname] = {}
                     stats[appname]["num_models"] = 0
-                    num_models = 0
                     for model in models[appname]:
                         if model == Permission or model == Site:
                             continue
@@ -101,6 +95,28 @@ class Exporter(DjangoDb):
         stats[appname][model.__name__] = num_model_instances
         return stats, num_instances
 
+    def archive_replicas(self):
+        filename = safe_join(settings.BASE_DIR, "replica.sqlite3")
+        has_file = os.path.exists(filename)
+        if not has_file:
+            return
+        dirpath = safe_join(settings.BASE_DIR, "replicas")
+        replicas = os.path.exists(dirpath)
+        if not replicas is True:
+            try:
+                print("Creating replicas archive directory ...")
+                os.makedirs(safe_join(settings.BASE_DIR, "replicas"))
+            except OSError as exc:  # Guard against race condition
+                if exc.errno != errno.EEXIST:
+                    raise
+        dst = safe_join(settings.BASE_DIR, "replicas")
+        ts = str(int(time.time()))
+        newname = "replica." + ts + ".sqlite3"
+        os.rename("replica.sqlite3", newname)
+        src = safe_join(settings.BASE_DIR, newname)
+        print("Archiving current replica ...")
+        shutil.move(src, dst)
+
     def stats(self, models, stats, num_models, num_instances, st):
         num_apps = len(models)
         elapsed_time = round(time.time() - st, 2)
@@ -116,9 +132,5 @@ class Exporter(DjangoDb):
                 elif ni == 0:
                     print("|xx", m, ": no instances")
 
-        print("[OK] Saved", num_instances, "instances from", num_models,
+        print("[OK] Saved", num_instances, "instances of", num_models,
               "models from", num_apps, "apps in", elapsed_time, "s")
-        if len(self.errors) > 0:
-            print("ERRORS")
-            for err in self.errors:
-                print(err)

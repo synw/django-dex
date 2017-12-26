@@ -27,12 +27,20 @@ class Command(BaseCommand):
                             default=1,
                             help='Set verbosity',
                             )
+        parser.add_argument('-a',
+                            dest='archive',
+                            action='store_true',
+                            default=False,
+                            help='Archive current replica',
+                            )
 
     def handle(self, *args, **options):
         try:
             ex = Exporter()
         except Exception as e:
             err.new(e, self.handle, "Can not initialize exporter")
+        if options["archive"] is True:
+            ex.archive_replicas()
         source = options["source"]
         dest = options["dest"]
         applist = options["applist"]

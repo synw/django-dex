@@ -2,8 +2,8 @@ import os
 from django.http.response import Http404
 from django.conf import settings
 from django.utils._os import safe_join
-TERM = "terminal" in settings.INSTALLED_APPS
-if TERM is True and "django_downloadview" in settings.INSTALLED_APPS is True:
+TERM = "term" in settings.INSTALLED_APPS
+if TERM is True:
     from django_downloadview import PathDownloadView
 
 
