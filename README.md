@@ -4,16 +4,10 @@ Database export tools to clone a Django database into another Django database
 
 ## Install
    
-Clone and add to installed apps:
+Install and add `"dex",` to installed apps:
 
    ```bash
    pip install django-dex
-   ``` 
-   
-Add to urls:
-   
-   ```python
-   url(r'^dex/', include('dex.urls')),
    ``` 
    
 ## Management commands
