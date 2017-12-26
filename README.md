@@ -47,7 +47,7 @@ Add `"django_downloadview",` to installed apps.
 
 Add `url('^dex/', include('dex.urls')),` to urls.
 
-These are command that run into [Django Terminal](https://github.com/synw/django-terminal)
+These are command that run into [Django Term](https://github.com/synw/django-term)
 
 [replicatedb](https://github.com/synw/django-terminal#commands): to replicate 
 the `default` database to the `replica` sqlite database.
