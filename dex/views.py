@@ -8,9 +8,7 @@ if TERM is True:
 
 
 class DexDlView(PathDownloadView):
-    app_dir = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.dirname(app_dir)
-    rpath = safe_join(project_dir, 'replica.sqlite3')
+    rpath = safe_join(settings.BASE_DIR, 'replica.sqlite3')
 
     def dispatch(self, request, *args, **kwargs):
         if not self.request.user.is_superuser:
@@ -22,9 +20,7 @@ class DexDlView(PathDownloadView):
 
 
 class DexMediaView(PathDownloadView):
-    app_dir = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.dirname(app_dir)
-    rpath = safe_join(project_dir, 'media.zip')
+    rpath = safe_join(settings.BASE_DIR, 'media.zip')
 
     def dispatch(self, request, *args, **kwargs):
         if not self.request.user.is_superuser:

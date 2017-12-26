@@ -117,6 +117,17 @@ class Exporter(DjangoDb):
         print("Archiving current replica ...")
         shutil.move(src, dst)
 
+    def remove_media_archive(self):
+        filename = safe_join(settings.BASE_DIR, "media.zip")
+        has_file = os.path.exists(filename)
+        if has_file is True:
+            print("Removing old media archive ...")
+            os.remove(filename)
+
+    def zipdir(self):
+        shutil.make_archive("media", 'zip', safe_join(
+            settings.BASE_DIR, "media"))
+
     def stats(self, models, stats, num_models, num_instances, st):
         num_apps = len(models)
         elapsed_time = round(time.time() - st, 2)
