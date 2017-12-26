@@ -56,7 +56,7 @@ Option:
    ```
 
 
-### Commands for django-terminal
+### Commands for [django-term](https://github.com/synw/django-term)
 
 ```bash
    pip install django-downloadview
