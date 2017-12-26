@@ -2,14 +2,13 @@ from term.commands import Command, rprint
 from django.core.management import call_command
 from django.utils.six import StringIO
 from dex.export import Exporter
-from django.conf import settings
 from django.urls.base import reverse
 
 
 def replicatedb(request, cmd_args):
-    return
     rprint("Migrating replica, please wait ...")
     ex = Exporter()
+    ex.archive_replicas()
     out = StringIO()
     call_command("migrate", "--database=replica", "--no-color", stdout=out)
     res = out.getvalue()
