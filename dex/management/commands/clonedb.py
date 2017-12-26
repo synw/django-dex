@@ -1,7 +1,8 @@
 from __future__ import print_function
+from goerr import err
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from dex.exporter import Exporter
+from dex.export import Exporter
 
 
 class Command(BaseCommand):
@@ -28,12 +29,26 @@ class Command(BaseCommand):
                             )
 
     def handle(self, *args, **options):
-        ex = Exporter()
+        try:
+            ex = Exporter()
+        except Exception as e:
+            err.new(e, self.handle, "Can not initialize exporter")
         source = options["source"]
         dest = options["dest"]
         applist = options["applist"]
         if options["migrate"] is not False:
-            call_command("migrate", "--database=" + dest)
+            try:
+                call_command("migrate", "--database=" + dest)
+            except Exception as e:
+                err.new(e, self.handle,
+                        "Can not migrate destination database " + dest)
         if applist is not None:
             applist = str.split(options["applist"], ",")
-        ex.clone(source, dest, applist=applist, verbosity=options["verbosity"])
+        try:
+            ex.clone(source, dest, applist=applist,
+                     verbosity=int(options["verbosity"]))
+        except Exception as e:
+            err.new(e, self.handle,
+                    "Can not clone database")
+        if err.exists:
+            err.throw()

@@ -10,13 +10,19 @@ Database export tools. Features:
 Install dependencies:
 
    ```bash
-   pip install influxdb
+   pip install influxdb django-downloadview
    ```
    
 Clone and add to installed apps:
 
    ```python
    "dex",
+   ``` 
+   
+Add to urls:
+   
+   ```python
+   url(r'^dex/', include('dex.urls')),
    ``` 
    
 ## Management commands

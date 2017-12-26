@@ -1,5 +1,6 @@
 import importlib
 import json
+from goerr import err
 from django.conf import settings
 from django.core import serializers as SRZ
 from dex.conf import DBS
@@ -12,16 +13,20 @@ class DexDb():
         self.err = None
         conf = self._get_db(dbname)
         if conf is None:
-            err = "Database " + dbname + " not found in settings"
-            self.err = err
+            msg = "Database " + dbname + " not found in settings"
+            err.new(self.__init__, msg)
             return
         self.conf = conf
         # init db
-        fstr = "dex.db." + self.conf["type"] + ".init"
-        init_func = self._importfunc(fstr)
-        init_func(self)
+        try:
+            fstr = "dex.db." + self.conf["type"] + ".init"
+            init_func = self._importfunc(fstr)
+            init_func(self)
+        except Exception as e:
+            err.new(e, self.__init__, "Can not initialize database")
 
-    def serialize(self, instance, model, serializers, measurement, time_field, enable_text_field):
+    def serialize(self, instance, model, serializers, measurement, time_field,
+                  enable_text_field):
         modelname = model.__name__
         if modelname in serializers:
             serializer = self._get_model_serializer(serializers, modelname)
