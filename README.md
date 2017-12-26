@@ -25,6 +25,8 @@ Add to installed apps:
    
 Where `default` and `replica` are registered databases in `settings.DATABASES`:
 
+### Databases settings
+
    ```python
    DATABASES = {
       'default': {
@@ -36,8 +38,24 @@ Where `default` and `replica` are registered databases in `settings.DATABASES`:
        }
    }
    ```
+   
+### Options:
 
-### Commands for [django-term](https://github.com/synw/django-term)
+`-apps`: apps to export:
+
+   ```
+   python3 manage.py clonedb default replica -apps=auth,myapp1,myapp2
+   ```
+
+`-m`: to migrate the destination database before copying data
+
+`-verb`: verbosity level. To mute it:
+
+   ```
+   python3 manage.py clonedb default replica -verb 0
+   ```
+
+## Commands for [django-term](https://github.com/synw/django-term)
 
 ```bash
    pip install django-downloadview
@@ -53,22 +71,6 @@ These are command that run into [Django Term](https://github.com/synw/django-ter
 the `default` database to the `replica` sqlite database.
    
 This command is used to clone the default db into a sqlite replica and download it.
-
-Options:
-
-`-apps`: apps to export:
-
-   ```
-   python3 manage.py clonedb default replica -apps=auth,myapp1,myapp2
-   ```
-
-`-m`: to migrate the destination database before copying data
-
-`-verb`: verbosity level. To mute it:
-
-   ```
-   python3 manage.py clonedb default replica -verb 0
-   ```
 
 ## Todo
 
