@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.sites.models import Site
 from introspection.inspector import inspect
-from ..db import DexDb
+#from ..db import DexDb
 from ..db.django import DjangoDb
 from ..conf import EXCLUDE
 
@@ -17,10 +17,12 @@ class Exporter(DjangoDb):
         if dbname is None:
             return
         self.err = None
+        """
         self.db = DexDb(dbname)
         if self.db.err is not None:
             err = "Dex exporter initialization error:\n" + self.db.err
             self.err = err
+        """
 
     def clone(self, dbsource, dbdest, applist=None, verbosity=1):
         global EXCLUDE

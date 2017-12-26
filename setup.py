@@ -22,7 +22,6 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     install_requires=[
-        "influxdb",
         "goerr",
         "django-introspection",
     ],
