@@ -1,0 +1,5 @@
+recursive-include dex/db *
+recursive-include dex/export *
+recursive-include dex/management *
+recursive-include dex/migrations *
+recursive-include dex/terminal *

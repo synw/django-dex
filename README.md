@@ -157,7 +157,8 @@ This command is used to clone the default db into a sqlite replica and download 
 
 ## Todo
 
-- [ ] Support for Rethinkdb
+- [ ] Humanize time duration
+- [ ] Better looking output
 - [ ] Export only one model
 - [ ] Register models to auto export on save
 - [ ] Model level database routing
