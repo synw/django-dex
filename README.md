@@ -73,7 +73,8 @@ Options:
 ## Todo
 
 - [ ] Humanize time duration
-- [ ] Better looking output
 - [ ] Export only one model
-- [ ] Register models to auto export on save
 - [ ] Model level database routing
+- [ ] Better looking output
+- [ ] Add an option to use `bulk_create` when there is no many-to-many relations
+- [ ] Register models to auto export on save
