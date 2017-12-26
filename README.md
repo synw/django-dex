@@ -23,7 +23,7 @@ Add to installed apps:
    python3 manage.py clonedb default replica
    ```
    
-Where `default` and `replica` are registered databases in settings.DATABASES:
+Where `default` and `replica` are registered databases in `settings.DATABASES`:
 
    ```python
    DATABASES = {
@@ -64,7 +64,7 @@ Options:
 
 `-m`: to migrate the destination database before copying data
 
-`verb`: verbosity level. To mute it:
+`-verb`: verbosity level. To mute it:
 
    ```
    python3 manage.py clonedb default replica -verb 0
