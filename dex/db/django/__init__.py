@@ -30,7 +30,7 @@ class DjangoDb():
         except IntegrityError as e:
             msg = "ERROR inserting", instance, "- ", model.__name__
             err.new(e, self._save_instance, msg)
-            raise(e)
+            err.throw()
         return
 
     def _disable_auto_now_fields(self, *models):

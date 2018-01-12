@@ -53,6 +53,7 @@ class Command(BaseCommand):
         if applist is not None:
             applist = str.split(options["applist"], ",")
         try:
+            ex.set_local()
             ex.clone(source, dest, applist=applist,
                      verbosity=int(options["verbosity"]))
         except Exception as e:

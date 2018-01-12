@@ -8,16 +8,25 @@ from django.utils._os import safe_join
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.sites.models import Site
+from django.db import connections, transaction
+from django.db.models.fields import AutoField
+from django.utils.functional import partition
+from django.db.models.query import QuerySet
 from introspection.inspector import inspect
 from ..db.django import DjangoDb
 from ..conf import EXCLUDE
 TERM = "term" in settings.INSTALLED_APPS
 if TERM is True:
     from term.commands import rprint
+    oprint = print
     print = rprint
 
 
 class Exporter(DjangoDb):
+
+    def set_local(self):
+        global print
+        print = oprint
 
     def clone(self, dbsource, dbdest, applist=None, verbosity=1):
         global EXCLUDE
@@ -46,7 +55,7 @@ class Exporter(DjangoDb):
             try:
                 s = appname.split(".")
                 appname = s[len(s) - 1]
-            except:
+            except Exception:
                 pass
             models[appname] = inspect.models(appname)
         num_models = 0
@@ -75,25 +84,50 @@ class Exporter(DjangoDb):
 
     def clone_model(self, model, dbsource, dbdest, num_instances,
                     appname, models, num_models, stats, verbosity):
-        qs = self._queryset(model, dbsource, False)
+        q = model.objects.using(dbsource).all()
         if verbosity > 0:
-            print("- Model", model.__name__, ":", qs.count(), "objects found")
+            print("- Model", model.__name__, ":", q.count(), "objects found")
         num_model_instances = 0
-        for instance in qs:
-            print(num_instances, appname, "-",
-                  model.__name__, num_model_instances)
-            num_instances += 1
-            num_model_instances += 1
+        if inspect.has_m2m(model) is False:
+            print("Bulk creating instances for model", model.__name__, "...")
             try:
-                self._save_instance(model, instance, dbdest)
+                qs = QuerySet(model=model, query=q, using=dbdest)
+                self.bulk_create(q, using=dbdest, qs=qs)
+                num_model_instances += q.count()
             except Exception as e:
                 err.new(e, self.clone_model,
-                        "Can not clone model " + model.__name__)
+                        "Can not bulk create model " + model.__name__)
                 return
+        else:
+            for instance in q:
+                print(num_instances, appname, "-",
+                      model.__name__, num_model_instances)
+                num_instances += 1
+                num_model_instances += 1
+                try:
+                    self._save_instance(model, instance, dbdest)
+                except Exception as e:
+                    err.new(e, self.clone_model,
+                            "Can not clone model " + model.__name__)
+                    return
         num_models += 1
         stats[appname]["num_models"] = len(models[appname])
         stats[appname][model.__name__] = num_model_instances
         return stats, num_instances
+
+    def bulk_create(self, objs, using=None, qs=None):
+        """
+        Fork of the original bulk_create function from django to be able
+        to use another database than the default
+        """
+        for parent in qs.model._meta.get_parent_list():
+            if parent._meta.concrete_model is not qs.model._meta.concrete_model:
+                raise ValueError(
+                    "Can't bulk create a multi-table inherited model")
+        fields = qs.model._meta.concrete_fields
+        fields = [f for f in fields if not isinstance(f, AutoField)]
+        with transaction.atomic(using=using, savepoint=False):
+            qs._batched_insert(objs, fields, batch_size=None)
 
     def archive_replicas(self):
         filename = safe_join(settings.BASE_DIR, "replica.sqlite3")

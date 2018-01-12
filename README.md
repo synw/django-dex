@@ -74,9 +74,9 @@ This command is used to clone the default db into a sqlite replica and download 
 
 ## Todo
 
+- [x] Add an option to use `bulk_create` when there is no many-to-many relations
 - [ ] Humanize time duration
 - [ ] Export only one model
 - [ ] Model level database routing
 - [ ] Better looking output
-- [ ] Add an option to use `bulk_create` when there is no many-to-many relations
 - [ ] Register models to auto export on save
