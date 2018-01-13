@@ -3,6 +3,7 @@ import time
 import os
 import errno
 import shutil
+from datetime import datetime
 from goerr import err
 from django.utils._os import safe_join
 from django.conf import settings
@@ -144,7 +145,7 @@ class Exporter(DjangoDb):
                 if exc.errno != errno.EEXIST:
                     raise
         dst = safe_join(settings.BASE_DIR, "replicas")
-        ts = str(int(time.time()))
+        ts = datetime.now().strftime('%Y-%m-%d-%H-%M')
         newname = "replica." + ts + ".sqlite3"
         os.rename("replica.sqlite3", newname)
         src = safe_join(settings.BASE_DIR, newname)
