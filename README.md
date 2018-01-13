@@ -20,7 +20,7 @@ Add to installed apps:
 ## Management command
 
    ```bash
-   python3 manage.py clonedb default replica
+   python3 manage.py clonedb default replica -a -m
    ```
    
 Where `default` and `replica` are registered databases in `settings.DATABASES`:
@@ -46,6 +46,8 @@ Where `default` and `replica` are registered databases in `settings.DATABASES`:
    ```
    python3 manage.py clonedb default replica -apps=auth,myapp1,myapp2
    ```
+
+`-a`: archive the last replica
 
 `-m`: to migrate the destination database before copying data
 
