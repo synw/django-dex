@@ -90,11 +90,15 @@ class Exporter(DjangoDb):
             print("- Model", model.__name__, ":", q.count(), "objects found")
         num_model_instances = 0
         if inspect.has_m2m(model) is False:
-            print("Bulk creating instances for model", model.__name__, "...")
+            numi = q.count()
+            if numi > 0:
+                print("Bulk creating", str(numi), "instances for model",
+                      model.__name__, "...")
             try:
                 qs = QuerySet(model=model, query=q, using=dbdest)
                 self.bulk_create(q, using=dbdest, qs=qs)
-                num_model_instances += q.count()
+                num_instances += numi
+                num_model_instances += numi
             except Exception as e:
                 err.new(e, self.clone_model,
                         "Can not bulk create model " + model.__name__)
@@ -111,7 +115,6 @@ class Exporter(DjangoDb):
                     err.new(e, self.clone_model,
                             "Can not clone model " + model.__name__)
                     return
-        num_models += 1
         stats[appname]["num_models"] = len(models[appname])
         stats[appname][model.__name__] = num_model_instances
         return stats, num_instances
