@@ -1,6 +1,9 @@
 # Django Dex
 
-Database export tools to clone a Django database into another Django database
+Database export tools:
+
+- Clone a Django database into another Django database
+- Export database records to files
 
 ## Install
    
@@ -17,7 +20,9 @@ Add to installed apps:
    "dex",
    ``` 
    
-## Management command
+## Management commands
+
+### Export a database to another database
 
    ```bash
    python3 manage.py clonedb default replica -a -m
@@ -56,6 +61,28 @@ Where `default` and `replica` are registered databases in `settings.DATABASES`:
    ```
    python3 manage.py clonedb default replica -verb 0
    ```
+   
+## Export database records to files
+
+Use a Django shell: example:
+
+   ```python
+   from dex.export import Exporter
+   from myapp.models import MyModel
+   
+   
+   q = MyModel.objects.all()
+   # parameters are: query, destination, slug field, content field and extension
+   Exporter().tofiles(q, "tmp", "url", "content", "html")
+   ```
+   
+Parameters for the `tofiles` method:
+
+- `query`: a Django orm query
+- `destination`: the destination folder where to save the files
+- `slug_field`: name of the field from where to take the file name
+- `content_field`: name of the field used to populate file content
+- `extension`: the file extension
 
 ## Commands for [django-term](https://github.com/synw/django-term)
 
