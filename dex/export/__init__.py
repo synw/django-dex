@@ -14,6 +14,7 @@ from django.db.models.fields import AutoField
 from django.utils.functional import partition
 from django.db.models.query import QuerySet
 from introspection.inspector import inspect
+from .tofiles import ExportToFile
 from ..db.django import DjangoDb
 from ..conf import EXCLUDE
 TERM = "term" in settings.INSTALLED_APPS
@@ -23,10 +24,9 @@ if TERM is True:
     print = rprint
 
 
-class Exporter(DjangoDb):
+class Exporter(DjangoDb, ExportToFile):
 
     def set_local(self):
-        global print
         print = oprint
 
     def clone(self, dbsource, dbdest, applist=None, verbosity=1):
