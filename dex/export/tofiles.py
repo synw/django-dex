@@ -17,7 +17,8 @@ class ExportToFile():
             name = "index"
         return name
 
-    def tofiles(self, q, destination, slug_field, content_field, extension):
+    def tofiles(self, q, destination, slug_field,
+                content_field, extension, func=None):
         """
         Exports data from a query to files
         Each record will be a file
@@ -28,12 +29,16 @@ class ExportToFile():
             return
         # run
         msg.info("Saving files to " + destination)
-        for el in q.values():
-            name = self.sanitize_filename(el[slug_field])
-            content = el[content_field]
+        for row in q.values():
+            name = self.sanitize_filename(row[slug_field])
+            content = row[content_field]
             filename = name + "." + extension
             filepath = destination + "/" + filename
             mesg = "Processing " + filepath
+            # process custom function
+            if func is not None:
+                content = func(row)
+            # write fifle
             self.write_file(filepath, content)
             msg.status(mesg)
         msg.ok("Done")

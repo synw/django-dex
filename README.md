@@ -64,16 +64,20 @@ Where `default` and `replica` are registered databases in `settings.DATABASES`:
    
 ## Export database records to files
 
-Use a Django shell: example:
+Use a Django extensions shell or script: example:
 
    ```python
    from dex.export import Exporter
    from myapp.models import MyModel
    
+   def process(row):
+       content = row["col1"] + row["col2"]
+       return content
    
    q = MyModel.objects.all()
-   # parameters are: query, destination, slug field, content field and extension
-   Exporter().tofiles(q, "tmp", "url", "content", "html")
+   # parameters are: query, destination, slug field, content field, file extension
+   # and optionaly a function to process the records before saving
+   Exporter().tofiles(q, "tmp", "url", "content", "html", process)
    ```
    
 Parameters for the `tofiles` method:
@@ -83,6 +87,7 @@ Parameters for the `tofiles` method:
 - `slug_field`: name of the field from where to take the file name
 - `content_field`: name of the field used to populate file content
 - `extension`: the file extension
+- 'func': optional: a function used to process the row before saving content
 
 ## Commands for [django-term](https://github.com/synw/django-term)
 
